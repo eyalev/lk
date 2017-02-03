@@ -32,6 +32,8 @@ class MyCLI(MultiCommand):
 
         commands_dirs = [self.user_commands_dir, self.core_commands_dir]
 
+        self.create_dir_if_needed(directory=self.user_commands_dir)
+
         for command_dir in commands_dirs:
 
             for file_name in os.listdir(command_dir):
@@ -49,6 +51,10 @@ class MyCLI(MultiCommand):
                     commands[command.name] = command
 
         return commands
+
+    def create_dir_if_needed(self, directory):
+
+        Path(directory).mkdir(parents=True, exist_ok=True)
 
     def list_commands(self, ctx):
         return sorted(self.commands)

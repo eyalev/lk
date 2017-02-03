@@ -10,7 +10,7 @@ RUN apt-get install -y git
 RUN wget https://bootstrap.pypa.io/get-pip.py -P /tmp
 RUN python /tmp/get-pip.py
 
-RUN echo user1 | sudo -S pip install git+git://github.com/eyalev/lk.git#egg=lk
+RUN echo user1 | sudo -S pip install git+git://github.com/eyalev/lk.git@dev#egg=lk
 
 ADD setup.sh .
 RUN bash setup.sh
