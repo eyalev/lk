@@ -5,6 +5,8 @@ from lk import definitions
 
 from pathlib2 import Path
 
+app_name = 'lk'
+
 # Bash
 
 bash_success_code = 0

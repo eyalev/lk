@@ -20,3 +20,9 @@ class PathUtil(object):
         _full_path = os.path.join(app_config.lk_path, relative_path)
 
         return _full_path
+
+    def join_paths(self, path1, path2):
+
+        _full_path = os.path.join(app_config.lk_path, relative_path)
+
+        return _full_path

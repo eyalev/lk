@@ -1,4 +1,5 @@
 from lk.config import app_config
+from lk.utils.config_util import ConfigUtil
 from lk.utils.path_util import full_path
 from lk.utils.shell_util import run_and_confirm
 
@@ -70,15 +71,22 @@ class SourceCodeRepo(object):
     @property
     def local_repo_string_path(self):
 
-        commands_repo_local_rel_path = '{local_repos_dir}/{repo_service}/{repo_user}/{commands_repo_name}'.format(
-            local_repos_dir=app_config.local_repos_dir,
+        commands_repo_local_path = '{local_repos_dir}/{repo_service}/{repo_user}/{commands_repo_name}'.format(
+            local_repos_dir=ConfigUtil().local_repos_dir,
             repo_service=self.hosting_service,
             repo_user=self.user,
             commands_repo_name=self.repo_name
         )
 
-        commands_repo_local_path = full_path(commands_repo_local_rel_path)
+        # from pathlib2 import Path
+        #
+        # user_data_dir = ConfigUtil().user_lk_data_dir
+        # commands_repo_local_path = Path(user_data_dir).joinpath(commands_repo_local_rel_path)
+        #
+        # commands_repo_local_path_string = str(commands_repo_local_path)
+        # # commands_repo_local_path = full_path(commands_repo_local_rel_path)
 
+        # return commands_repo_local_path_string
         return commands_repo_local_path
 
 

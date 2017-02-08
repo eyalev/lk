@@ -1,6 +1,7 @@
 
 from pathlib2 import Path
 
+from lk.config import app_config
 from lk.definitions import LK_ROOT
 
 
@@ -10,10 +11,26 @@ class ConfigUtil(object):
         pass
 
     @property
+    def local_repos_dir(self):
+
+        local_repos_dir = Path(self.user_lk_data_dir).joinpath(app_config.local_repos_dir)
+
+        return local_repos_dir
+
+    @property
     def user_lk_config_dir(self):
 
         user_lk_config_dir = '{user_config_dir}/lk'.format(
             user_config_dir=self.user_config_dir
+        )
+
+        return user_lk_config_dir
+
+    @property
+    def user_lk_data_dir(self):
+
+        user_lk_config_dir = '{user_shared_data_dir}/lk'.format(
+            user_shared_data_dir=self.user_shared_data_dir
         )
 
         return user_lk_config_dir
@@ -28,10 +45,19 @@ class ConfigUtil(object):
         return user_config_dir
 
     @property
+    def user_shared_data_dir(self):
+
+        user_config_dir = '{home_path}/.local/share'.format(
+            home_path=str(Path.home())
+        )
+
+        return user_config_dir
+
+    @property
     def user_commands_directory(self):
 
-        user_commands_directory = '{user_lk_config_dir}/user_commands'.format(
-            user_lk_config_dir=self.user_lk_config_dir
+        user_commands_directory = '{user_lk_data_dir}/user_commands'.format(
+            user_lk_data_dir=self.user_lk_data_dir
         )
 
         return user_commands_directory

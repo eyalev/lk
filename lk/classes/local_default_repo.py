@@ -1,5 +1,6 @@
 from lk.classes.local_config import LocalConfig
 from lk.config import app_config
+from lk.utils.config_util import ConfigUtil
 from lk.utils.path_util import full_path
 
 
@@ -27,7 +28,7 @@ class LocalDefaultRepo(object):
         commands_repo_name = self.remote_commands_repo_url.split('/')[4]
 
         commands_repo_local_rel_path = '{local_repos_dir}/{repo_service}/{repo_user}/{commands_repo_name}'.format(
-            local_repos_dir=app_config.local_repos_dir,
+            local_repos_dir=ConfigUtil().local_repos_dir,
             repo_service=repo_service,
             repo_user=repo_user,
             commands_repo_name=commands_repo_name
