@@ -55,7 +55,7 @@ class LocalConfig(object):
     def create_config(self, remote_repo=None):
 
         if not self.lk_config_dir_path.exists():
-            Path.mkdir(self.lk_config_dir_path)
+            Path.mkdir(self.lk_config_dir_path, parents=True, exist_ok=True)
 
         if self.lk_config_file_path.exists():
 
