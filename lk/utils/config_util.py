@@ -72,6 +72,34 @@ class ConfigUtil(object):
         return core_commands_directory
 
     @property
+    def dev_commands_directory(self):
+
+        dev_commands_directory = '{lk_project_path}/commands/dev_commands'.format(
+            lk_project_path=self.lk_project_path
+        )
+
+        return dev_commands_directory
+
+    @property
     def lk_project_path(self):
 
         return LK_ROOT
+
+    def join_paths(self, first_path, *args):
+
+        combined_path = Path(first_path).joinpath(args)
+
+        return combined_path
+
+    @property
+    def lk_bash_complete_script_path(self):
+
+        relative_path = 'scripts/lk_bash_complete.sh'
+
+        # full_path = Path(self.lk_project_path).joinpath(relative_path)
+        full_path = self.join_paths(self.lk_project_path, relative_path)
+
+        return full_path
+
+
+config_util = ConfigUtil()

@@ -4,11 +4,11 @@ from pathlib2 import Path
 from lk.utils.config_util import ConfigUtil
 
 
-@click.command('add-command')
+@click.command('add-dev-command')
 @click.argument('name')
 def cli(name):
 
-    print('# Adding command: ' + name)
+    print('# Adding dev command: ' + name)
 
     template = """
 
@@ -29,7 +29,7 @@ def cli():
     )
 
     command_path = '{commands_directory}/{command_name}_command.py'.format(
-        commands_directory=ConfigUtil().user_commands_directory,
+        commands_directory=ConfigUtil().dev_commands_directory,
         command_name=name.replace('-', '_')
     )
 
@@ -37,4 +37,4 @@ def cli():
 
     print('# Command path: ' + command_path)
 
-    print('# Finished adding command: ' + name)
+    print('# Finished adding dev command: ' + name)

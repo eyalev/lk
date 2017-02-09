@@ -4,6 +4,7 @@ import click
 from pathlib2 import Path
 
 from lk.config import app_config
+from lk.utils.config_util import ConfigUtil
 
 
 @click.command('create-shell-command')
@@ -43,7 +44,7 @@ def cli():
     )
 
     command_path = '{commands_directory}/{command_name}_command.py'.format(
-        commands_directory=app_config.commands_directory,
+        commands_directory=ConfigUtil().user_commands_directory,
         command_name=command.replace('-', '_')
     )
 

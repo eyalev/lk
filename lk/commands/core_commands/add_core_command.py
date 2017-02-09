@@ -4,7 +4,7 @@ from pathlib2 import Path
 from lk.utils.config_util import ConfigUtil
 
 
-@click.command('add-command')
+@click.command('add-core-command')
 @click.argument('name')
 def cli(name):
 
@@ -29,7 +29,7 @@ def cli():
     )
 
     command_path = '{commands_directory}/{command_name}_command.py'.format(
-        commands_directory=ConfigUtil().user_commands_directory,
+        commands_directory=ConfigUtil().core_commands_directory,
         command_name=name.replace('-', '_')
     )
 

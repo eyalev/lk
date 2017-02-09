@@ -1,5 +1,5 @@
 
-import os
+# import os
 
 from lk import definitions
 
@@ -21,9 +21,9 @@ current_dir_path = str(Path.cwd())
 
 lk_path = definitions.LK_ROOT
 
-commands_directory = os.path.join(lk_path, 'commands')
+# commands_directory = os.path.join(lk_path, 'commands')
 
-repos_directory = os.path.join(current_dir_path, 'repos')
+# repos_directory = os.path.join(current_dir_path, 'repos')
 
 # commands_local_repo_dir_path = os.path.join(current_dir_path, 'repos/bitbucket/breezometer/lk-commands/commands')
 
