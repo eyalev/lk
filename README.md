@@ -1,6 +1,6 @@
 # lk
 
-Command line application that helps sharing commands and scripts.
+Command line tool for sharing commands and scripts.
 
 **Table of Contents:**
 
