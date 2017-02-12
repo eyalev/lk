@@ -13,7 +13,17 @@ class Dir(object):
     def path(self):
         return self._path
 
+    @property
     def is_git_repo(self):
+
+        try:
+            _ = git.Repo(self.path).git_dir
+            return True
+        except git.exc.InvalidGitRepositoryError:
+            return False
+
+    @property
+    def is_hg_repo(self):
 
         try:
             _ = git.Repo(self.path).git_dir

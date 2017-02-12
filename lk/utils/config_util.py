@@ -36,10 +36,15 @@ class ConfigUtil(object):
         return user_lk_config_dir
 
     @property
+    def user_home_path(self):
+        home_path = str(Path.home())
+        return home_path
+
+    @property
     def user_config_dir(self):
 
         user_config_dir = '{home_path}/.config'.format(
-            home_path=str(Path.home())
+            home_path=self.user_home_path
         )
 
         return user_config_dir
@@ -87,7 +92,7 @@ class ConfigUtil(object):
 
     def join_paths(self, first_path, *args):
 
-        combined_path = Path(first_path).joinpath(args)
+        combined_path = Path(first_path).joinpath(*args)
 
         return combined_path
 
@@ -100,6 +105,12 @@ class ConfigUtil(object):
         full_path = self.join_paths(self.lk_project_path, relative_path)
 
         return full_path
+
+    @property
+    def user_bashrc_path(self):
+
+        bashrc_path = Path(self.user_home_path).joinpath('.bashrc')
+        return str(bashrc_path)
 
 
 config_util = ConfigUtil()

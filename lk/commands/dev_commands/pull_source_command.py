@@ -13,5 +13,9 @@ def cli():
 
         shell_commands.git_pull_current_branch()
 
+    elif current_dir.is_hg_repo:
+
+        shell_commands.hg_pull_current_branch()
+
     print('Finished command: pull-source')
 
