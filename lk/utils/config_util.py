@@ -99,7 +99,7 @@ class ConfigUtil(object):
     @property
     def lk_bash_complete_script_path(self):
 
-        relative_path = 'shell_integration/lk_bash_complete.sh'
+        relative_path = 'scripts/lk_bash_complete.sh'
 
         # full_path = Path(self.lk_project_path).joinpath(relative_path)
         full_path = self.join_paths(self.lk_project_path, relative_path)

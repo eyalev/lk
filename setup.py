@@ -5,6 +5,7 @@ setup(
     version='0.1',
     packages=find_packages(),
     # packages=['lk.classes'],
+    package_data={'lk': ['scripts/*.sh']},
     include_package_data=True,
     install_requires=[
         'Click',
