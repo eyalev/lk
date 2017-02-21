@@ -2,6 +2,7 @@ import yaml
 from collections import OrderedDict as odict
 
 import click
+from lk.utils.config_util import ConfigUtil
 from pathlib2 import Path
 
 from lk.classes.exceptions import LocalConfigNotFound
@@ -13,10 +14,12 @@ class LocalConfig(object):
 
     def __init__(self):
 
-        self.lk_config_dir_string = str(Path.home()) + '/' + '.config/lk'
+        # self.lk_config_dir_string = str(Path.home()) + '/' + '.config/lk'
+        self.lk_config_dir_string = ConfigUtil().lk_config_dir
         self.lk_config_dir_path = Path(self.lk_config_dir_string)
 
-        self.lk_config_file_path_string = self.lk_config_dir_string + '/' + 'lk_config.yaml'
+        # self.lk_config_file_path_string = self.lk_config_dir_string + '/' + 'lk_config.yaml'
+        self.lk_config_file_path_string = ConfigUtil().user_lk_config_file_path
         self.lk_config_file_path = Path(self.lk_config_file_path_string)
 
     @property

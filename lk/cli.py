@@ -6,6 +6,7 @@
 import os
 from distutils.file_util import copy_file
 
+import click
 from click import MultiCommand
 from pathlib2 import Path
 
@@ -129,6 +130,8 @@ class MyCLI(MultiCommand):
 
             return command
 
+        # elif ConfigUtil().add_command_prompt_enabled:
+
         else:
             return None
 
@@ -153,6 +156,12 @@ class MyCLI(MultiCommand):
 
         remote_default_repo.clone()
 
+
+# env_option = click.Option(param_decls=['-e', '--env'], default='prod', help='Environment config')
+# params = [env_option]
+
+# cli = MyCLI(params=params)
+# @click.option('--debug/--no-debug', default=False)
 cli = MyCLI()
 
 

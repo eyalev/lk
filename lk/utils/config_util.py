@@ -18,15 +18,6 @@ class ConfigUtil(object):
         return local_repos_dir
 
     @property
-    def user_lk_config_dir(self):
-
-        user_lk_config_dir = '{user_config_dir}/lk'.format(
-            user_config_dir=self.user_config_dir
-        )
-
-        return user_lk_config_dir
-
-    @property
     def user_lk_data_dir(self):
 
         user_lk_config_dir = '{user_shared_data_dir}/lk'.format(
@@ -41,13 +32,40 @@ class ConfigUtil(object):
         return home_path
 
     @property
-    def user_config_dir(self):
+    def user_data_dir(self):
 
-        user_config_dir = '{home_path}/.config'.format(
+        user_data_dir = '{home_path}/.local/share'.format(
             home_path=self.user_home_path
         )
 
+        return user_data_dir
+
+    @property
+    def user_lk_dir(self):
+
+        user_lk_dir = '{user_data_dir}/lk'.format(
+            user_data_dir=self.user_data_dir
+        )
+
+        return user_lk_dir
+
+    @property
+    def lk_config_dir(self):
+
+        user_config_dir = '{user_lk_dir}/config'.format(
+            user_lk_dir=self.user_lk_dir
+        )
+
         return user_config_dir
+
+    @property
+    def user_lk_config_file_path(self):
+
+        lk_config_file_path = '{lk_config_dir}/lk_config.yaml'.format(
+            lk_config_dir=self.lk_config_dir
+        )
+
+        return lk_config_file_path
 
     @property
     def user_shared_data_dir(self):
@@ -63,6 +81,22 @@ class ConfigUtil(object):
 
         user_commands_directory = '{user_lk_data_dir}/user_commands'.format(
             user_lk_data_dir=self.user_lk_data_dir
+        )
+
+        return user_commands_directory
+
+    @property
+    def lk_dir(self):
+
+        lk_dir = app_config.lk_path
+
+        return lk_dir
+
+    @property
+    def user_commands_directory_in_lk_dir(self):
+
+        user_commands_directory = '{lk_dir}/commands/user_commands'.format(
+            lk_dir=self.lk_dir
         )
 
         return user_commands_directory
@@ -86,6 +120,15 @@ class ConfigUtil(object):
         return dev_commands_directory
 
     @property
+    def commands_config_file_path(self):
+
+        file_name = 'lk_commands_config.yaml'
+
+        commands_config_file_path = self.join_paths_string(self.lk_config_dir, file_name)
+
+        return commands_config_file_path
+
+    @property
     def lk_project_path(self):
 
         return LK_ROOT
@@ -95,6 +138,12 @@ class ConfigUtil(object):
         combined_path = Path(first_path).joinpath(*args)
 
         return combined_path
+
+    def join_paths_string(self, first_path, *args):
+
+        combined_path = self.join_paths(first_path, *args)
+
+        return str(combined_path)
 
     @property
     def lk_bash_complete_script_path(self):

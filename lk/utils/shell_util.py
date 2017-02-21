@@ -40,8 +40,6 @@ def run_and_return_output(command, command_for_print=None, print_command=False, 
 
     return output
 
-run_command = run_and_return_output
-
 
 def run_confirm_and_return_dict(command):
 
@@ -156,3 +154,16 @@ def run_and_confirm(command, allow_error=False):
     return_code = run_and_print(command, confirm_prompt=True, allow_error=allow_error)
 
     return return_code
+
+
+def run_interactive(command):
+
+    run_and_print(command, verbose=True)
+
+
+run_command = run_and_return_output
+run = run_and_print
+# run_interactive = run_and_print
+execute = run_and_return_output
+get_output = run_and_return_output
+

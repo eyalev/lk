@@ -19,28 +19,22 @@ pip install git+git://github.com/eyalev/lk.git#egg=lk
 
 ### First Run
 
-The hello-world command is not distributed with `lk` so the first invocation will fetch it from a remote commands repository.
-
 ````
 $ lk hello-world
 
-# Command not found locally
+| Command not found locally.
+|
+| Cloning remote repo: https://github.com/lk-commands/default
+| to local path: YOUR_LOCAL_APP_DATA_PATH
+|
+| Command found in cloned repo at: YOUR_CLONED_REPO_PATH
+|
+| Adding 'hello-world' to list of local commands.
+|
+| Command output:
 
-# Fetching default remote repo: https://github.com/lk-commands/default
-
-# Found command 'hello-world' in local repo: https://github.com/lk-commands/default
-
-# Adding 'hello-world' to list of local commands.
-
-# Command contents:
---------------------------------------
-echo 'Hello World'
---------------------------------------
-
-# Running command:
---------------------------------------
 Hello World
---------------------------------------
+
 
 ````
 
@@ -56,11 +50,11 @@ Hello World
 ````
 $ lk create-shell-command hello-me
 
-# Enter shell command:
+| Enter shell command:
 
 echo 'Hello me'
 
-# Command successfully added
+| Command successfully added
 
 ````
 
@@ -72,39 +66,21 @@ $ lk hello-me
 Hello me
 ````
 
-### Run Command with Verbosity
-
-
-````
-$ lk -v hello-me
-
-# Found command 'hello-world' in local commands.
-
-# Command contents:
---------------------------------------
-echo 'Hello me'
---------------------------------------
-
-# Running command:
-
-Hello me
-
-````
-
 ## Push Command to Repository
 
 
 ````
 $ lk push hello-me
 
-# Configuring commands repository
-# Create one if needed. Example: https://github.com/your-user-name/lk-commands
-# Enter repository URL:
->> https://github.com/your-user-name/lk-commands
+| Configuring commands repository
+| Create one if needed. Example: https://github.com/your-user-name/lk-commands
+| Enter repository URL:
 
-# Pusing command 'hello-me' to repo: https://github.com/your-user-name/lk-commands
+https://github.com/your-user-name/lk-commands
 
-# Command pushed successfuly.
+| Pusing command 'hello-me' to repo: https://github.com/your-user-name/lk-commands
+|
+| Command pushed successfuly.
 
 ````
 
@@ -156,26 +132,29 @@ hello-me          # https://github.com/your-user-name/lk-commands
 ````
 
 
+## Create New Command
 
+The `add-command` command will create a new command python file. 
+There, you can add python code for execution.
 
+Example:
 
+````
+$ lk add-command command1
 
+| Adding command: command1
+| Command location: PATH_TO_COMMAND
 
+````
 
+Now you can edit the file.
 
+Open it with your favorite editor and add custom code.
 
+Example:
 
+````
 
+print('command1 output')
 
-
-
-
-
-
-
-
-
-
-
-
-
+````

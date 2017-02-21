@@ -1,6 +1,8 @@
 import git
 
+from lk.classes.python_util import P
 from lk.classes.shell import current_shell_path
+from lk.utils.shell_util import run_and_get_return_code
 
 
 class Dir(object):
@@ -25,10 +27,11 @@ class Dir(object):
     @property
     def is_hg_repo(self):
 
-        try:
-            _ = git.Repo(self.path).git_dir
+        return_code = run_and_get_return_code('hg root')
+
+        if P(return_code).is_shell_success_code:
             return True
-        except git.exc.InvalidGitRepositoryError:
+        else:
             return False
 
 
