@@ -12,6 +12,8 @@ setup(
         'pathlib2',
         'PyYAML',
         'bash',
+        'ruamel.yaml',
+        'libtmux',
     ],
     entry_points='''
         [console_scripts]

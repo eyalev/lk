@@ -12,11 +12,16 @@ RUN python /tmp/get-pip.py
 
 ENV REFRESHED_AT 2017-02-12T19:50:00
 
-RUN echo user1 | sudo -S pip install git+git://github.com/eyalev/lk.git@dev#egg=lk
+RUN echo user1_pass | sudo -S pip install git+git://github.com/eyalev/lk.git@dev#egg=lk
 
-ADD setup.sh .
-RUN bash setup.sh
+ADD setup_user1.sh .
+RUN bash setup_user1.sh
 
-USER user1
+ADD setup_user2.sh .
+RUN bash setup_user2.sh
 
-WORKDIR /home/user1
+#USER user1
+USER user2
+
+#WORKDIR /home/user1
+WORKDIR /home/user2
