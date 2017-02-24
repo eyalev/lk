@@ -32,6 +32,11 @@ class ConfigUtil(object):
         return home_path
 
     @property
+    def current_dir(self):
+        current_dir = str(Path.cwd())
+        return current_dir
+
+    @property
     def user_data_dir(self):
 
         user_data_dir = '{home_path}/.local/share'.format(

@@ -117,3 +117,13 @@ def print_with_separators(text, top_space=True):
 def print_with_bottom_space(text):
 
     print(text_with_bottom_space(text))
+
+
+def print_command(command):
+
+    print_with_space('Command:\n{command}'.format(command=command))
+
+
+def print_not_implemented():
+
+    print('Option not implemented.')

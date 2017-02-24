@@ -1,3 +1,4 @@
+from lk.config import app_config
 from lk.utils.string_util import String
 
 
@@ -46,6 +47,13 @@ class PythonUtil(object):
     @property
     def is_not_a_url(self):
         return not self.is_url
+
+    @property
+    def is_bash_success_code(self):
+        if str(self.input) == str(app_config.bash_success_code):
+            return True
+        else:
+            return False
 
 
 P = PythonUtil

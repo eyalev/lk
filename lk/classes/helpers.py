@@ -1,6 +1,7 @@
 
 from lk.classes.local_config import LocalConfig
 from lk.classes.local_default_repo import LocalDefaultRepo
+from lk.classes.local_repo import LocalRepo
 from lk.classes.source_code_repo import SourceCodeRepo
 
 
@@ -15,6 +16,7 @@ def get_remote_default_repo():
 def get_local_default_repo():
 
     local_default_repo = LocalDefaultRepo()
+    # local_default_repo = LocalRepo()
 
     return local_default_repo
 

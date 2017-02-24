@@ -1,18 +1,42 @@
+from collections import OrderedDict as odict
+
+import click
+
 from lk.classes import yaml
+from lk.classes.local_config import setup_yaml
 from lk.classes.python_util import P
+from lk.config import app_config
 from lk.utils.config_util import ConfigUtil
 from pathlib2 import Path
 
 
 # lk config keys
+from lk.utils.confirm_util import app_confirm
+
 default_push_repo = 'default_push_repo'
+default_pull_repo = 'default_commands_repo'
 create_command_prompt = 'create_command_prompt'
 
 
 class LKConfig(object):
 
     def __init__(self):
-        pass
+
+        self.init_config_if_needed()
+
+    def init_config_if_needed(self):
+
+        if not self.config_exists:
+            self.create_config()
+
+    @property
+    def config_exists(self):
+
+        if self.path_object.exists():
+            return True
+
+        else:
+            return False
 
     @property
     def path(self):
@@ -101,6 +125,10 @@ class LKConfig(object):
     def default_push_repo(self):
         return self.odict[default_push_repo]
 
+    @property
+    def default_pull_repo(self):
+        return self.odict[default_pull_repo]
+
     def update_default_push_repo(self, repo_url):
 
         self.set(default_push_repo, repo_url)
@@ -110,9 +138,9 @@ class LKConfig(object):
 
         return self.key_enabled(create_command_prompt)
 
-    def update_push_repo(self, remote_repo):
-
-        self.create_config(remote_repo=remote_repo)
+    # def update_push_repo(self, remote_repo):
+    #
+    #     self.create_config(remote_repo=remote_repo)
 
     # def default_commands_repo(self):
     #
@@ -126,12 +154,38 @@ class LKConfig(object):
     #
     #         # raise LocalConfigNotFound
 
+    @property
+    def lk_config_dir_string(self):
+
+        lk_config_dir_string = ConfigUtil().lk_config_dir
+
+        return lk_config_dir_string
+
+    @property
+    def lk_config_dir_path_object(self):
+
+        lk_config_dir_path_object = Path(self.lk_config_dir_string)
+
+        return lk_config_dir_path_object
+
+    @property
+    def lk_config_file_path_string(self):
+        lk_config_file_path_string = ConfigUtil().user_lk_config_file_path
+        return lk_config_file_path_string
+
+    @property
+    def lk_config_file_path_object(self):
+
+        lk_config_file_path = Path(self.lk_config_file_path_string)
+
+        return lk_config_file_path
+
     def create_config(self, remote_repo=None):
 
-        if not self.lk_config_dir_path.exists():
-            Path.mkdir(self.lk_config_dir_path, parents=True, exist_ok=True)
+        if not self.lk_config_dir_path_object.exists():
+            Path.mkdir(self.lk_config_dir_path_object, parents=True, exist_ok=True)
 
-        if self.lk_config_file_path.exists():
+        if self.lk_config_file_path_object.exists():
 
             print('# Config file exists at: {config_file_path}'.format(config_file_path=self.lk_config_file_path_string))
 
@@ -149,8 +203,6 @@ class LKConfig(object):
             ('default_commands_repo', remote_repo_value)
         ])
 
-        setup_yaml()
+        config_yaml_string = yaml.dump(config_odict)
 
-        config_yaml_string = yaml.dump(config_odict, default_flow_style=False)
-
-        self.lk_config_file_path.write_text(config_yaml_string.decode('utf-8'))
+        self.lk_config_file_path_object.write_text(config_yaml_string.decode('utf-8'))

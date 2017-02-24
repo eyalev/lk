@@ -1,3 +1,4 @@
+from lk.classes.lk_config import LKConfig
 from lk.classes.local_config import LocalConfig
 from lk.config import app_config
 from lk.utils.config_util import ConfigUtil
@@ -12,7 +13,8 @@ class LocalDefaultRepo(object):
     @property
     def remote_commands_repo_url(self):
 
-        commands_repo = LocalConfig().default_commands_repo()
+        # commands_repo = LocalConfig().default_commands_repo()
+        commands_repo = LKConfig().default_pull_repo
 
         return commands_repo
 
