@@ -63,6 +63,9 @@ class SourceCodeRepo(object):
 
         url = self.url
 
+        if 'github' in url:
+            return url
+
         _furl = furl(url)
 
         git_url = 'git@{host}:{user}/{repo}.git'.format(
