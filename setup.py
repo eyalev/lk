@@ -15,7 +15,6 @@ setup(
         'ruamel.yaml',
         'libtmux',
         'furl',
-        'utils2',
         'git+git://github.com/eyalev/utils2.git#egg=utils2',
     ],
     entry_points='''
