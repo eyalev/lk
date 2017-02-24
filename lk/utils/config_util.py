@@ -67,6 +67,11 @@ class ConfigUtil(object):
 
         return lk_config_file_path
 
+    # @property
+    # def add_command_prompt_enabled(self):
+
+
+
     @property
     def user_shared_data_dir(self):
 

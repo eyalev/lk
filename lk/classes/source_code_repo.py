@@ -1,7 +1,7 @@
-from lk.config import app_config
 from lk.utils.config_util import ConfigUtil
-from lk.utils.path_util import full_path
 from lk.utils.shell_util import run_and_confirm
+
+from furl import furl
 
 
 class SourceCodeRepo(object):
@@ -48,12 +48,30 @@ class SourceCodeRepo(object):
         # https://github.com/lk-commands/default
         # git@github.com:lk-commands/default.git
 
+        # git clone git@bitbucket.org:eyalev/lk-commands.git
+
         # clone_command = 'git clone git@{hosting_service_host}:{user}/{repo_name}.git'.format(
-        clone_command = 'git clone {repo_url}.git'.format(
-            repo_url=self.url
+        # clone_command = 'git clone {repo_url}.git'.format(
+        clone_command = 'git clone {git_url}'.format(
+            git_url=self.git_url
         )
 
         return clone_command
+
+    @property
+    def git_url(self):
+
+        url = self.url
+
+        _furl = furl(url)
+
+        git_url = 'git@{host}:{user}/{repo}.git'.format(
+            host=_furl.host,
+            user=str(_furl.path).split('/')[1],
+            repo=str(_furl.path).split('/')[2]
+        )
+
+        return git_url
 
     def clone(self):
 

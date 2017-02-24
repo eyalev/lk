@@ -1,3 +1,4 @@
+from lk.utils.string_util import String
 
 
 class PythonUtil(object):
@@ -27,6 +28,24 @@ class PythonUtil(object):
 
         else:
             return False
+
+    @property
+    def is_yaml_true(self):
+
+        if self.input == 'true' or self.input is True:
+            return True
+
+        else:
+            return False
+
+    @property
+    def is_url(self):
+        is_url = String(self.input).is_url
+        return is_url
+
+    @property
+    def is_not_a_url(self):
+        return not self.is_url
 
 
 P = PythonUtil

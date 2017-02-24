@@ -1,3 +1,6 @@
+import json
+
+from utils2.json_util import JSONUtil
 
 
 class String(object):
@@ -8,6 +11,25 @@ class String(object):
     @property
     def string(self):
         return self._string
+
+    def to_dict(self):
+
+        return json.loads(self.string)
+
+    def to_pretty_json_string(self):
+
+        return json.dumps(self.to_odict(), indent=4)
+
+    def to_odict(self):
+
+        json_object = json.loads(self.string)
+
+        if type(json_object) == dict:
+            json_odict = JSONUtil(self.string).to_odict()
+            return json_odict
+
+        else:
+            return json_object
 
     @property
     def is_url(self):
@@ -58,10 +80,19 @@ def text_with_space(text):
     return result
 
 
-def text_with_separators(text):
+def text_with_separators(text, top_space=True):
+
+    if top_space:
+        prefix = '\n'
+    else:
+        prefix = ''
 
     separator = 90 * '-'
-    result = '\n{separator}\n{text}\n{separator}\n'.format(text=text, separator=separator)
+    result = '{prefix}{separator}\n{text}\n{separator}\n'.format(
+        prefix=prefix,
+        text=text,
+        separator=separator
+    )
 
     return result
 
@@ -78,9 +109,9 @@ def print_with_space(text):
     print(text_with_space(text))
 
 
-def print_with_separators(text):
+def print_with_separators(text, top_space=True):
 
-    print(text_with_separators(text))
+    print(text_with_separators(text, top_space=top_space))
 
 
 def print_with_bottom_space(text):

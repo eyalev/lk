@@ -11,9 +11,12 @@ from click import MultiCommand
 from pathlib2 import Path
 
 from lk.classes import helpers
+from lk.classes.commands import Commands
+from lk.classes.lk_config import LKConfig
 from lk.classes.local_default_repo import LocalDefaultRepo
 # from lk.config.app_config import commands_directory
 from lk.utils.config_util import ConfigUtil
+from lk.utils.shell_util import run_and_confirm, run
 
 
 class MyCLI(MultiCommand):
@@ -117,6 +120,9 @@ class MyCLI(MultiCommand):
             #
             #         command_found = True
 
+        if not command_found:
+            print('Command not found in repository.')
+
         if command_found:
 
             command_path = self.user_commands_dir + '/' + command_file_name
@@ -130,7 +136,17 @@ class MyCLI(MultiCommand):
 
             return command
 
-        # elif ConfigUtil().add_command_prompt_enabled:
+        elif LKConfig().add_command_prompt_enabled:
+
+            if click.confirm('Would you like to add this command?', default=True):
+                run('lk add-command {command}'.format(command=name))
+
+                if click.confirm('Would you like to edit this command?', default=True):
+                    run('lk edit-command {command_name}'.format(command_name=name))
+
+                empty_command = Commands().get_empty_command(click_format=True)
+
+                return empty_command
 
         else:
             return None

@@ -1,4 +1,5 @@
 import git
+from pathlib2 import Path
 
 from lk.classes.python_util import P
 from lk.classes.shell import current_shell_path
@@ -16,6 +17,11 @@ class Dir(object):
         return self._path
 
     @property
+    def path_object(self):
+        path_object = Path(self.path)
+        return path_object
+
+    @property
     def is_git_repo(self):
 
         try:
@@ -23,6 +29,10 @@ class Dir(object):
             return True
         except git.exc.InvalidGitRepositoryError:
             return False
+
+    def create_if_needed(self):
+
+        self.path_object.mkdir(parents=True, exist_ok=True)
 
     @property
     def is_hg_repo(self):

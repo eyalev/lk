@@ -10,7 +10,7 @@ def cli(name):
 
     print('# Adding command: ' + name)
 
-    template = """
+    template = """\
 
 import click
 

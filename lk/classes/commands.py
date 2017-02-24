@@ -1,12 +1,42 @@
 import os
 
+from lk.classes.command import Command
 from lk.utils.config_util import ConfigUtil
+from lk.utils.shell_util import run_and_confirm
 
 
 class Commands(object):
 
     def __init__(self):
         pass
+
+    def get_empty_command(self, click_format):
+
+        if click_format:
+            command = self.get_click_command('empty-command')
+        else:
+            raise NotImplementedError
+
+        return command
+
+    def get_click_command(self, command_name):
+
+        command = Command(command_name)
+
+        with open(str(command.path)) as _file:
+            args = {}
+            code = compile(_file.read(), command.file_name, 'exec')
+            eval(code, args, args)
+
+        command = args['cli']
+
+        return command
+
+    def remove_command(self, command_name):
+
+        command_path = Command(command_name).path
+
+        run_and_confirm('rm {command_path}'.format(command_path=command_path))
 
     def get_commands(self):
 

@@ -6,32 +6,43 @@ from pathlib2 import Path
 
 from lk.classes import helpers
 from lk.classes.helpers import get_local_config
+from lk.classes.lk_config import LKConfig
 from lk.classes.local_config import LocalConfig
+from lk.classes.local_repo import LocalRepo
+from lk.classes.python_util import P
 from lk.classes.source_code_repo import SourceCodeRepo
 from lk.config import app_config
+from lk.utils.config_util import ConfigUtil
 from lk.utils.shell_util import run_and_confirm, run_and_return_output, run_and_print
 from lk.utils.string_util import multi_command_template
 
 
 class PushCommand(object):
 
-    def __init__(self, command_name):
+    def __init__(self, command_name, repo):
 
         self._command_name = command_name
+        self._repo = repo
+
+        self.lk_config = LKConfig()
+
+    @property
+    def repo(self):
+        return self._repo
 
     def push(self, force_push):
 
-        print('Command for push: {command_name}'.format(command_name=self.command_name))
+        # print('Pushing command: {command_name}'.format(command_name=self.command_name))
 
         self.init_local_repo()
 
         if self.command_file_destination_path.exists():
             print('File: {file_path} already exists.'.format(file_path=self.command_file_destination_path_string))
         else:
-            # import pdb; pdb.set_trace()
+
             copy_file(
-                os.path.join(app_config.lk_path, self.command_file_string_path),
-                os.path.join(app_config.lk_path, self.local_repo_commands_dir_string_path)
+                os.path.join(ConfigUtil().user_commands_directory, self.command_file_string_path),
+                os.path.join(ConfigUtil().user_lk_dir, self.local_repo_commands_dir_string_path)
             )
 
         if self.changes_exist():
@@ -46,7 +57,7 @@ class PushCommand(object):
     @property
     def command_file_string_path(self):
 
-        command_file_string_path = 'commands/{command_name}_command.py'.format(
+        command_file_string_path = '{command_name}_command.py'.format(
             command_name=self.command_path_name
         )
 
@@ -74,8 +85,12 @@ class PushCommand(object):
         local_config = get_local_config()
 
         if local_config.not_found:
-            remote_repo_url = self.get_remote_repo_url_from_user()
-            local_config.add_remote_repo(remote_repo_url)
+            push_repo_url = self.get_remote_repo()
+
+            print('Using default push repo.')
+            print('Repo: {}'.format(push_repo_url))
+
+            self.lk_config.update_default_push_repo(push_repo_url)
 
         if self.local_repo_exists:
             print('Repository {commands_repo_name} already exists.'.format(commands_repo_name=self.commands_repo_name))
@@ -85,11 +100,13 @@ class PushCommand(object):
         if not self.local_repo_commands_dir_path.exists():
             self.local_repo_commands_dir_path.mkdir()
 
-    def get_remote_repo_url_from_user(self):
+    def get_remote_repo(self):
 
         print("""
 # Configuring commands repository
 # Create one if needed. Example: https://github.com/your-user-name/lk-commands
+# This will be saved as your default push repo.
+# You can change that later with `lk update-push-repo REPO_NAME`
 """)
 
         remote_repo = click.prompt('# Enter repository URL')
@@ -130,22 +147,57 @@ class PushCommand(object):
     @property
     def remote_commands_repo(self):
 
-        commands_repo = LocalConfig().default_commands_repo()
+        # commands_repo = LocalConfig().default_commands_repo()
+        commands_repo = self.push_repo()
 
         return commands_repo
 
     @property
     def local_repo_string_path(self):
 
-        local_default_repo = helpers.get_local_default_repo()
+        # local_default_repo = helpers.get_local_default_repo()
+        # push_repo_url = self.lk_config.default_push_repo
+        push_repo_url = self.push_repo()
+        local_repo_path = LocalRepo(remote_url=push_repo_url).path
 
-        return local_default_repo.string_path
+        return local_repo_path
 
+    @property
     def commands_repo_name(self):
 
-        commands_repo_name = self.remote_commands_repo.split('/')[4]
+        # commands_repo_name = self.remote_commands_repo.split('/')[4]
+        commands_repo_name = self.push_repo().split('/')[4]
 
         return commands_repo_name
+
+    def push_repo(self):
+
+        repo = self.repo
+        if P(repo).is_url:
+            return repo
+
+        elif self.lk_config.alias_exists(repo):
+            return self.lk_config.get_repo_alias(repo)
+
+        elif click.confirm("'{repo}' is not a valid URL. Would you like to define '{repo}' as alias?".format(repo=repo), default=True):
+            repo_url = click.prompt('Please enter repo URL')
+
+            if P(repo_url).is_not_a_url:
+                raise ValueError('{repo_url} is not a valid URL.'.format(repo_url=repo_url))
+
+            alias = repo
+
+            self.lk_config.set_repo_alias(
+                alias=alias,
+                repo_url=repo_url
+            )
+
+            repo_url_from_config = self.lk_config.get_repo_alias(alias)
+
+            return repo_url_from_config
+
+        else:
+            return self.lk_config.default_push_repo
 
     def push_changes(self):
 
