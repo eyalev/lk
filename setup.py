@@ -14,6 +14,7 @@ setup(
         'bash',
         'ruamel.yaml',
         'libtmux',
+        'furl',
     ],
     entry_points='''
         [console_scripts]
