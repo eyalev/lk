@@ -12,6 +12,13 @@ class String(object):
     def string(self):
         return self._string
 
+    # @string.setter
+    # def string(self, value):
+    #     self._string = value
+
+    def set(self, value):
+        self._string = value
+
     def to_dict(self):
 
         return json.loads(self.string)
@@ -30,6 +37,18 @@ class String(object):
 
         else:
             return json_object
+
+    @property
+    def lines(self):
+        return self.string.split('\n')
+
+    @property
+    def first_line(self):
+        return self.lines[0]
+
+    def remove_first_line(self):
+        updated_string = '\n'.join(self.lines[1:])
+        self.set(updated_string)
 
     @property
     def is_url(self):
@@ -71,6 +90,9 @@ def multi_command_template(command_template, separator=False, continue_on_error=
             result = command_template.strip().replace('\n', ' &&\n')
 
     return result
+
+
+multiple_commands_template = multi_command_template
 
 
 def text_with_space(text):
@@ -126,4 +148,37 @@ def print_command(command):
 
 def print_not_implemented():
 
-    print('Option not implemented.')
+    print('Not implemented.')
+
+
+def print_lines(string_list):
+
+    for string in string_list:
+        print(string)
+
+
+printed_once = 'printed_once'
+
+print_dict = {
+    printed_once: None
+}
+
+
+def print_util(string, name=None):
+
+    prefix = ''
+    suffix = '\n'
+    name_part = ''
+
+    if not print_dict.get(printed_once):
+        print_dict[printed_once] = True
+        prefix = '\n'
+
+    if name is not None:
+        name_part = '{name}: \n'.format(name=name)
+
+    print(prefix + name_part + string + suffix)
+
+
+cli_print = print_util
+

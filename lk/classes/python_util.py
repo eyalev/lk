@@ -55,5 +55,9 @@ class PythonUtil(object):
         else:
             return False
 
+    @property
+    def is_bash_error_code(self):
+        return not self.is_bash_success_code
+
 
 P = PythonUtil

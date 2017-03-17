@@ -1,18 +1,38 @@
 from lk.utils.config_util import ConfigUtil
-from lk.utils.shell_util import run_and_confirm
+from lk.utils.shell_util import run_and_confirm, run, run_and_return_output
 
 from furl import furl
+
+bitbucket = 'bitbucket'
+bitbucket_domain = 'bitbucket.org'
+github = 'github'
+github_domain = 'github.com'
 
 
 class SourceCodeRepo(object):
 
-    def __init__(self, url):
+    def __init__(self, url=None, service=None, user=None, repo_name=None):
 
         self._url = url
 
+        self._service = service
+        self._user = user
+        self._repo_name = repo_name
+
     @property
     def url(self):
-        return self._url
+
+        if self._url:
+            return self._url
+
+        else:
+
+            url = 'https://{service_domain}/{user}/{repo}'.format(
+                service_domain=self.service_domain,
+                user=self.user,
+                repo=self.repo_name
+            )
+            return url
 
     @property
     def hosting_service_host(self):
@@ -31,16 +51,22 @@ class SourceCodeRepo(object):
     @property
     def user(self):
 
-        user = self._url.split('/')[3]
+        if self._user:
+            return self._user
 
-        return user
+        else:
+            user = self._url.split('/')[3]
+            return user
 
     @property
     def repo_name(self):
 
-        repo_name = self._url.split('/')[4]
+        if self._repo_name:
+            return self._repo_name
 
-        return repo_name
+        else:
+            repo_name = self._url.split('/')[4]
+            return repo_name
 
     @property
     def clone_command(self):
@@ -90,6 +116,10 @@ class SourceCodeRepo(object):
         run_and_confirm(command)
 
     @property
+    def commands_dir_string_path(self):
+        return self.local_repo_string_path + '/commands'
+
+    @property
     def local_repo_string_path(self):
 
         commands_repo_local_path = '{local_repos_dir}/{repo_service}/{repo_user}/{commands_repo_name}'.format(
@@ -99,17 +129,60 @@ class SourceCodeRepo(object):
             commands_repo_name=self.repo_name
         )
 
-        # from pathlib2 import Path
-        #
-        # user_data_dir = ConfigUtil().user_lk_data_dir
-        # commands_repo_local_path = Path(user_data_dir).joinpath(commands_repo_local_rel_path)
-        #
-        # commands_repo_local_path_string = str(commands_repo_local_path)
-        # # commands_repo_local_path = full_path(commands_repo_local_rel_path)
-
-        # return commands_repo_local_path_string
         return commands_repo_local_path
 
+    @property
+    def service(self):
+
+        if self._service:
+            return self._service
+
+        if 'bitbucket.org' in self.url:
+            return bitbucket
+
+        elif 'github.com' in self.url:
+            return github
+
+        else:
+            raise NotImplementedError
+
+    @property
+    def bitbucket(self):
+        return self.service == bitbucket
+
+    @property
+    def github(self):
+        return self.service == github
+
+    @property
+    def service_domain(self):
+
+        if self.bitbucket:
+            return bitbucket_domain
+
+        if self.github:
+            return github_domain
+
+        else:
+            raise NotImplementedError
+
+    def remote_file_source(self, file_name):
+
+        if self.bitbucket:
+            shell_command = 'git archive --remote=git@{service_domain}:{user}/{repo}.git HEAD commands/{file_name} | tar -x -O'.format(
+                service_domain=self.service_domain,
+                user=self.user,
+                repo=self.repo_name,
+                file_name=file_name
+            )
+            output = run_and_return_output(shell_command)
+            return output
+
+        elif self.github:
+            raise NotImplementedError
+
+        else:
+            raise NotImplementedError
 
 
 

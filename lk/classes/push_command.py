@@ -5,6 +5,7 @@ import click
 from pathlib2 import Path
 
 from lk.classes import helpers
+from lk.classes.commands_config import CommandsConfig
 from lk.classes.helpers import get_local_config
 from lk.classes.lk_config import LKConfig
 from lk.classes.local_config import LocalConfig
@@ -14,7 +15,7 @@ from lk.classes.source_code_repo import SourceCodeRepo
 from lk.config import app_config
 from lk.utils.config_util import ConfigUtil
 from lk.utils.shell_util import run_and_confirm, run_and_return_output, run_and_print
-from lk.utils.string_util import multi_command_template
+from lk.utils.string_util import multi_command_template, cli_print
 
 
 class PushCommand(object):
@@ -26,33 +27,51 @@ class PushCommand(object):
 
         self.lk_config = LKConfig()
 
+        self.command_already_created = None
+
     @property
     def repo(self):
         return self._repo
 
-    def push(self, force_push):
+    def push(self, force_push, only_update_config):
 
         # print('Pushing command: {command_name}'.format(command_name=self.command_name))
 
         self.init_local_repo()
 
         if self.command_file_destination_path.exists():
+            self.command_already_created = True
             print('File: {file_path} already exists.'.format(file_path=self.command_file_destination_path_string))
-        else:
 
-            copy_file(
-                os.path.join(ConfigUtil().user_commands_directory, self.command_file_string_path),
-                os.path.join(ConfigUtil().user_lk_dir, self.local_repo_commands_dir_string_path)
-            )
+        else:
+            self.command_already_created = False
+
+        copy_file(
+            os.path.join(ConfigUtil().user_commands_directory, self.command_file_string_path),
+            os.path.join(ConfigUtil().user_lk_dir, self.local_repo_commands_dir_string_path)
+        )
 
         if self.changes_exist():
             self.show_git_status()
             self.commit_changes()
             self.push_changes()
+            self.update_commands_config()
         elif force_push:
             self.push_changes()
+            self.update_commands_config()
+        elif only_update_config:
+            self.update_commands_config()
         else:
             print('No changes in commands repo.')
+
+    def update_commands_config(self):
+
+        cli_print('Updating commands config.')
+
+        CommandsConfig().update_command(
+            command_name=self.command_name,
+            repo_url=self.repo_url
+        )
 
     @property
     def command_file_string_path(self):
@@ -170,6 +189,10 @@ class PushCommand(object):
 
         return commands_repo_name
 
+    @property
+    def repo_url(self):
+        return self.push_repo()
+
     def push_repo(self):
 
         repo = self.repo
@@ -247,18 +270,30 @@ git status --porcelain
 
         print('# Committing changes')
 
+        commit_message = self.get_commit_message()
+
         commands_template = multi_command_template("""
 cd {commands_repo_string_path}
 git add .
-git commit -am "Adding command '{command_name}'"
+git commit -am "{commit_message}"
 """)
 
         commands = commands_template.format(
             commands_repo_string_path=self.local_repo_string_path,
-            command_name=self.command_name
+            command_name=self.command_name,
+            commit_message=commit_message
         )
 
         run_and_confirm(commands)
+
+    def get_commit_message(self):
+
+        if self.command_already_created:
+            commit_message = "Updating command '{command_name}'".format(command_name=self.command_name)
+        else:
+            commit_message = "Adding command '{command_name}'".format(command_name=self.command_name)
+
+        return commit_message
 
     def clone_lk_repo(self):
 

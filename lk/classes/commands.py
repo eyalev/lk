@@ -40,7 +40,7 @@ class Commands(object):
 
     def get_commands(self):
 
-        commands = []
+        click_commands = {}
 
         commands_dirs = [ConfigUtil().user_commands_directory, ConfigUtil().core_commands_directory]
 
@@ -50,6 +50,8 @@ class Commands(object):
 
                 if file_name.endswith('.py') and file_name != '__init__.py':
 
+                    args = {}
+
                     file_path = os.path.join(command_dir, file_name)
 
                     with open(file_path) as _file:
@@ -57,6 +59,12 @@ class Commands(object):
                         eval(code, args, args)
 
                     command = args['cli']
-                    commands[command.name] = command
+                    click_commands[command.name] = command
 
-        return []
+        lk_commands = {}
+
+        for command_name, click_command in click_commands.iteritems():
+            lk_command = Command(command_name)
+            lk_commands[command_name] = lk_command
+
+        return lk_commands

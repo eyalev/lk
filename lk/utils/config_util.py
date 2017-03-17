@@ -18,6 +18,13 @@ class ConfigUtil(object):
         return local_repos_dir
 
     @property
+    def local_repos_dir_path(self):
+
+        local_repos_dir_object = self.local_repos_dir
+
+        return str(local_repos_dir_object)
+
+    @property
     def user_lk_data_dir(self):
 
         user_lk_config_dir = '{user_shared_data_dir}/lk'.format(
@@ -130,9 +137,18 @@ class ConfigUtil(object):
         return dev_commands_directory
 
     @property
-    def commands_config_file_path(self):
+    def commands_config_yaml_file_path(self):
 
         file_name = 'lk_commands_config.yaml'
+
+        commands_config_file_path = self.join_paths_string(self.lk_config_dir, file_name)
+
+        return commands_config_file_path
+
+    @property
+    def commands_config_json_file_path(self):
+
+        file_name = 'lk_commands_config.json'
 
         commands_config_file_path = self.join_paths_string(self.lk_config_dir, file_name)
 

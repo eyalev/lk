@@ -16,6 +16,8 @@ setup(
         'libtmux',
         'furl',
         'utils2',
+        'pycountry',
+        'pyaml',
     ],
     entry_points='''
         [console_scripts]

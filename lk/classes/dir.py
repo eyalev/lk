@@ -1,3 +1,6 @@
+
+import shutil
+
 import git
 from pathlib2 import Path
 
@@ -43,6 +46,14 @@ class Dir(object):
             return True
         else:
             return False
+
+    def remove(self):
+
+        shutil.rmtree(self.path)
+
+    @property
+    def exists(self):
+        return self.path_object.exists()
 
 
 current_dir = Dir(current_shell_path)

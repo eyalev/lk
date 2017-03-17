@@ -1,9 +1,40 @@
-# import sys
-# import os
-# sys.path.insert(1, os.path.join(sys.path[0], '..'))
-# sys.path.insert(1, '/home/eyalev/workspace/github/lk3')
 
 import os
+import sys
+import argparse
+
+from lk.classes.commands_config import CommandsConfig
+from lk.utils.path_util import join_paths
+
+lk_repo_arg = '--lk-repo'
+repo = None
+
+
+def handle_repo_argument():
+
+    global repo
+
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument(lk_repo_arg, type=str)
+    arguments, unknown = parser.parse_known_args()
+    repo = arguments.lk_repo
+    remove_repo_argument_from_argv()
+
+
+def remove_repo_argument_from_argv():
+
+    # Handle lk repo option with '='
+    if lk_repo_arg in sys.argv:
+        index = sys.argv.index(lk_repo_arg)
+        sys.argv.pop(index+1)
+        sys.argv.pop(index)
+
+    # Handle lk repo option with '='
+    sys.argv[:] = [x for x in sys.argv if not x.startswith(lk_repo_arg + '=')]
+
+
+handle_repo_argument()
+
 from distutils.file_util import copy_file
 
 import click
@@ -14,9 +45,9 @@ from lk.classes import helpers
 from lk.classes.commands import Commands
 from lk.classes.lk_config import LKConfig
 from lk.classes.local_default_repo import LocalDefaultRepo
-# from lk.config.app_config import commands_directory
+from lk.classes.source_code_repo import SourceCodeRepo
 from lk.utils.config_util import ConfigUtil
-from lk.utils.shell_util import run_and_confirm, run
+from lk.utils.shell_util import run
 
 
 class MyCLI(MultiCommand):
@@ -29,12 +60,24 @@ class MyCLI(MultiCommand):
         self.core_commands_dir = ConfigUtil().core_commands_directory
 
         self.commands = self._init_commands()
+        # self.commands = self._init_commands_new()
+
+        self._repo = None
+
+    def get_first_level_dirs(self, parent_dir):
+
+        from glob import glob
+        dirs = glob("{parent_dir}/*/".format(parent_dir=parent_dir))
+
+        return dirs
 
     def _init_commands(self):
 
         commands = {}
 
-        commands_dirs = [self.user_commands_dir, self.core_commands_dir]
+        first_level_dirs = self.get_first_level_dirs(self.core_commands_dir)
+
+        commands_dirs = [self.user_commands_dir, self.core_commands_dir] + first_level_dirs
 
         self.create_dir_if_needed(directory=self.user_commands_dir)
 
@@ -56,14 +99,44 @@ class MyCLI(MultiCommand):
 
         return commands
 
-    def create_dir_if_needed(self, directory):
+    def _init_commands_new(self):
 
-        Path(directory).mkdir(parents=True, exist_ok=True)
+        command_list = []
+
+        commands_dirs = [self.user_commands_dir, self.core_commands_dir]
+
+        for commands_dir in commands_dirs:
+
+            for file_name in os.listdir(commands_dir):
+                if file_name.endswith('.py') and file_name != '__init__.py':
+                    command_list.append(file_name[:-3])
+            # command_list.sort()
+
+        return command_list
 
     def list_commands(self, ctx):
         return sorted(self.commands)
 
+    def create_dir_if_needed(self, directory):
+
+        Path(directory).mkdir(parents=True, exist_ok=True)
+
     def get_command(self, ctx, name):
+
+        command_name = name
+
+        if self.got_repo_argument():
+
+            if self.command_exists(command_name=command_name):
+                command = self.get_command_from_source(command_name=command_name)
+                return command
+
+            self.clone_repo()
+
+            if self.command_exists(command_name=command_name):
+                self.copy_command_to_user_commands_dir(command_name=command_name)
+                command = self.get_command_from_source(command_name=command_name)
+                return command
 
         command = self.commands.get(name)
 
@@ -72,7 +145,7 @@ class MyCLI(MultiCommand):
 
         command_found = False
 
-        print('''Couldn't find local command: "{name}"'''.format(name=name))
+        print('''Couldn't find user command: "{name}"'''.format(name=name))
         print('Checking commands repository.')
 
         command_file_name = '{command_name}_command.py'.format(
@@ -81,44 +154,46 @@ class MyCLI(MultiCommand):
 
         local_default_repo = helpers.get_local_default_repo()
 
-        local_repo_command_path = Path(local_default_repo.commands_dir_string_path + '/' + command_file_name)
+        local_default_repo_command_path_object = Path(local_default_repo.commands_dir_string_path + '/' + command_file_name)
 
-        if local_repo_command_path.exists():
+        if not command_found:
 
-            print('Found command in commands repository (local cache).')
-            print('Adding command to local commands.')
+            if local_default_repo_command_path_object.exists():
 
-            copy_file(str(local_repo_command_path), self.user_commands_dir)
+                print('Found command in commands repository (local cache).')
+                print('Adding command to local commands.')
 
-            command_found = True
+                copy_file(str(local_default_repo_command_path_object), self.user_commands_dir)
 
-        else:
+                command_found = True
 
-            if self.local_commands_repo_not_exists():
+            else:
 
-                self.clone_commands_repo()
+                if self.local_commands_repo_not_exists():
 
-                if local_repo_command_path.exists():
+                    self.clone_commands_repo()
 
-                    print('Found command in commands repository (remote).')
-                    print('Adding command to local commands.')
+                    if local_default_repo_command_path_object.exists():
 
-                    copy_file(str(local_repo_command_path), self.user_commands_dir)
+                        print('Found command in commands repository (remote).')
+                        print('Adding command to local commands.')
 
-                    command_found = True
+                        local_default_repo_command_path = str(local_default_repo_command_path_object)
 
-                else:
-                    print('Command not found in repo local copy.')
+                        copy_file(local_default_repo_command_path, self.user_commands_dir)
 
-            # if self.local_commands_repo_not_in_sync():
-            #
-            #     self.sync_local_commands_repo()
-            #
-            #     if self.command_found_in_local_repo():
-            #
-            #         self.copy_command_to_commands_master_directory()
-            #
-            #         command_found = True
+                        CommandsConfig().add_command(
+                            command_name=command_name,
+                            repo_url=self.remote_repo.url,
+                            local_path=self.get_local_command_path(command_name),
+                            local_repo_command_path=local_default_repo_command_path,
+                            local_repo_path=self.local_default_repo_string_path
+                        )
+
+                        command_found = True
+
+                    else:
+                        print('Command not found in repo local copy.')
 
         if not command_found:
             print('Command not found in repository.')
@@ -151,6 +226,130 @@ class MyCLI(MultiCommand):
         else:
             return None
 
+    def get_local_command_path(self, command_name):
+
+        commands_dir = self.user_commands_dir
+
+        file_name = self.get_command_file_name(command_name)
+
+        local_command_path = join_paths(commands_dir, file_name)
+
+        return local_command_path
+
+    def get_command_from_source(self, command_name):
+
+        command_file_name = self.get_command_file_name(command_name=command_name)
+        # command_file_name = self.get_command_file_name_new(command_name=command_name)
+
+        command_path = self.user_commands_dir + '/' + command_file_name
+
+        with open(str(command_path)) as _file:
+            args = {}
+            code = compile(_file.read(), command_file_name, 'exec')
+            eval(code, args, args)
+
+        command = args['cli']
+
+        return command
+
+    def copy_command_to_user_commands_dir(self, command_name):
+
+        command_repo_path = self.get_command_repo_path(command_name=command_name)
+
+        print('Found command in commands repository (remote).')
+        print('Adding command to local commands.')
+
+        copy_file(command_repo_path, self.user_commands_dir)
+
+    def get_command_repo_path(self, command_name):
+
+        command_path_object = self.get_command_path_object(command_name)
+
+        return str(command_path_object)
+
+    def command_exists(self, command_name):
+
+        command_path_object = self.get_command_path_object(command_name=command_name)
+
+        return command_path_object.exists()
+
+    def get_command_file_name(self, command_name):
+
+        command_file_name = '{command_name}_command.py'.format(
+            command_name=command_name.replace('-', '_')
+        )
+
+        return command_file_name
+
+    def get_command_file_name_new(self, command_name):
+
+        command_file_name = '{command_name}.py'.format(
+            command_name=command_name.replace('-', '_')
+        )
+
+        return command_file_name
+
+    def get_command_path_object(self, command_name):
+
+        command_file_name = self.get_command_file_name(command_name=command_name)
+
+        repo_object = self.get_repo_object()
+
+        local_repo_command_path = Path(repo_object.commands_dir_string_path + '/' + command_file_name)
+
+        return local_repo_command_path
+
+    def got_repo_argument(self):
+
+        repo = self.get_repo_argument()
+
+        if repo:
+            return True
+        else:
+            return False
+
+    # def remove_repo_argument_from_argv(self):
+    #
+    #     import sys
+    #     sys.argv[:] = [x for x in sys.argv if not x.startswith('--repo')]
+    #     # import ipdb; ipdb.set_trace()
+    #     # a = ''
+
+    def get_repo_object(self):
+
+        """
+        :rtype: SourceCodeRepo
+        """
+
+        repo_url = self.get_repo_argument()
+
+        repo_object = SourceCodeRepo(url=repo_url)
+
+        return repo_object
+
+    def clone_repo(self):
+
+        repo_object = self.get_repo_object()
+
+        repo_object.clone()
+
+    def get_repo_argument(self):
+
+        return repo
+
+    #
+    #     if self._repo:
+    #         return self._repo
+    #
+    #     import argparse
+    #     parser = argparse.ArgumentParser()
+    #     parser.add_argument('--repo', type=str)
+    #     arguments, unknown = parser.parse_known_args()
+    #     self._repo = arguments.repo
+    #     self.remove_repo_argument_from_argv()
+    #
+    #     return self._repo
+
     @property
     def local_default_repo_string_path(self):
         return LocalDefaultRepo().string_path
@@ -166,11 +365,22 @@ class MyCLI(MultiCommand):
         else:
             return False
 
+    # def clone_repo_temp(self, repo):
+    #
+    #     remote_repo = helpers.get_remote_default_repo()
+    #
+    #     remote_repo.clone()
+
+    @property
+    def remote_repo(self):
+
+        remote_repo = helpers.get_remote_default_repo()
+
+        return remote_repo
+
     def clone_commands_repo(self):
 
-        remote_default_repo = helpers.get_remote_default_repo()
-
-        remote_default_repo.clone()
+        self.remote_repo.clone()
 
 
 # env_option = click.Option(param_decls=['-e', '--env'], default='prod', help='Environment config')

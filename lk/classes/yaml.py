@@ -1,4 +1,4 @@
-
+# from collections import OrderedDict as odict
 
 import ruamel.yaml as ryaml
 
@@ -6,6 +6,9 @@ import ruamel.yaml as ryaml
 def load(string):
 
     result = ryaml.load(string, ryaml.RoundTripLoader)
+
+    # if result is None:
+    #     return {}
 
     return result
 
