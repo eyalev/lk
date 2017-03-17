@@ -6,3 +6,5 @@
 repos/
 
 lk.egg-info/
+
+lk/env/
