@@ -18,6 +18,7 @@ setup(
         'utils2',
         'pycountry',
         'pyaml',
+        'GitPython==2.0.6',
     ],
     entry_points='''
         [console_scripts]
