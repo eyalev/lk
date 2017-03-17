@@ -29,7 +29,7 @@ class CommandsConfig(object):
 
             odict_object = odict()
             odict_object[commands_dir_key] = ConfigUtil().user_commands_directory
-            odict_object[commands_key] = None
+            odict_object[commands_key] = odict()
 
             self.update_config(odict_object=odict_object)
 
@@ -106,6 +106,9 @@ class CommandsConfig(object):
 
     @property
     def odict(self):
+
+        if self.json_file_content == '':
+            return {}
 
         json_odict = String(self.json_file_content).to_odict()
 
@@ -223,7 +226,12 @@ class CommandsConfig(object):
 
     def get_info_odict(self, command_name):
 
+        info_odict = odict()
+
         command_data = self.get_command_data(command_name)
+
+        if not command_data:
+            return info_odict
 
         info_odict_data = command_data.get(info_key)
 
@@ -242,8 +250,6 @@ class CommandsConfig(object):
         if info_odict_data:
             info_odict = odict()
             info_odict[info_key] = info_odict_data
-        else:
-            info_odict = odict()
 
         return info_odict
 

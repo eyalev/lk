@@ -10,7 +10,7 @@ RUN apt-get install -y git
 RUN wget https://bootstrap.pypa.io/get-pip.py -P /tmp
 RUN python /tmp/get-pip.py
 
-ENV REFRESHED_AT 2017-03-17T01:02:00
+ENV REFRESHED_AT 2017-03-17T13:24:00
 
 RUN echo user1_pass | sudo -S pip install git+git://github.com/eyalev/lk.git@dev#egg=lk
 
