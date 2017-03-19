@@ -185,6 +185,7 @@ class MyCLI(MultiCommand):
                         CommandsConfig().add_command(
                             command_name=command_name,
                             repo_url=self.remote_repo.url,
+                            file_name=command_file_name,
                             local_path=self.get_local_command_path(command_name),
                             local_repo_command_path=local_default_repo_command_path,
                             local_repo_path=self.local_default_repo_string_path

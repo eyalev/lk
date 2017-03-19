@@ -19,6 +19,7 @@ setup(
         'pycountry',
         'pyaml',
         'GitPython==2.0.6',
+        'xerox==0.4.1',
     ],
     entry_points='''
         [console_scripts]

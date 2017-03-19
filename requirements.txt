@@ -12,3 +12,4 @@ pycountry==1.17
 pyaml==16.12.2
 splinter==0.7.5
 six==1.10.0
+xerox==0.4.1

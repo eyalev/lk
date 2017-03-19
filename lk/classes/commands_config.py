@@ -2,7 +2,7 @@ from collections import OrderedDict as odict
 
 # from lk.classes.command import Command
 from lk.classes.commands_config_keys import commands_dir_key, commands_key, relative_path_key, repo_url_key, \
-    local_path_key, local_repo_path_key, local_repo_command_path_key, info_key, file_name_key, last_push_key
+    local_path_key, local_repo_path_key, local_repo_command_path_key, info_key, file_name_key, last_push_timestamp_key
 from lk.classes.dict_util import Dict
 from lk.classes.file_util import File
 from lk.utils.config_util import ConfigUtil
@@ -162,15 +162,18 @@ class CommandsConfig(object):
                        file_name=None,
                        local_repo_path=None,
                        local_repo_command_path=None,
-                       last_push=None
+                       last_push_timestamp=None
                        ):
 
         commands_odict = self.commands_odict
 
-        command_odict = commands_odict.get(command_name)
+        command_odict = commands_odict.get(command_name, odict())
 
         if repo_url:
             command_odict[repo_url_key] = repo_url
+        else:
+            if repo_url_key not in command_odict:
+                command_odict[repo_url_key] = None
 
         if local_path:
             command_odict[local_path_key] = local_path
@@ -184,11 +187,11 @@ class CommandsConfig(object):
         if local_repo_command_path:
             command_odict[local_repo_command_path_key] = local_repo_command_path
 
-        if last_push:
-            command_odict[last_push_key] = last_push
+        if last_push_timestamp:
+            command_odict[last_push_timestamp_key] = last_push_timestamp
         else:
-            if last_push_key not in command_odict:
-                command_odict[last_push_key] = None
+            if last_push_timestamp_key not in command_odict:
+                command_odict[last_push_timestamp_key] = None
 
         info_odict = self.get_info_odict(command_name=command_name)
 
@@ -197,7 +200,7 @@ class CommandsConfig(object):
         command_config_keys_order = [
             file_name_key,
             repo_url_key,
-            last_push_key,
+            last_push_timestamp_key,
             local_path_key,
             local_repo_path_key,
             local_repo_command_path_key,

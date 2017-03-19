@@ -3,6 +3,7 @@ from distutils.file_util import copy_file
 
 import click
 from pathlib2 import Path
+from utils2.datetime_util import DatetimeUtil
 
 from lk.classes import helpers
 from lk.classes.commands_config import CommandsConfig
@@ -68,9 +69,12 @@ class PushCommand(object):
 
         cli_print('Updating commands config.')
 
+        now_datetime = DatetimeUtil().now_string()
+
         CommandsConfig().update_command(
             command_name=self.command_name,
-            repo_url=self.repo_url
+            repo_url=self.repo_url,
+            last_push_timestamp=now_datetime
         )
 
     @property
