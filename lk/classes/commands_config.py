@@ -177,15 +177,27 @@ class CommandsConfig(object):
 
         if local_path:
             command_odict[local_path_key] = local_path
+        else:
+            if local_path_key not in command_odict:
+                command_odict[local_path_key] = None
 
         if file_name:
             command_odict[file_name_key] = file_name
+        else:
+            if file_name_key not in command_odict:
+                command_odict[file_name_key] = None
 
         if local_repo_path:
             command_odict[local_repo_path_key] = local_repo_path
+        else:
+            if local_repo_path_key not in command_odict:
+                command_odict[local_repo_path_key] = None
 
         if local_repo_command_path:
             command_odict[local_repo_command_path_key] = local_repo_command_path
+        else:
+            if local_repo_command_path_key not in command_odict:
+                command_odict[local_repo_command_path_key] = None
 
         if last_push_timestamp:
             command_odict[last_push_timestamp_key] = last_push_timestamp

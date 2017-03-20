@@ -15,6 +15,7 @@ from lk.classes.python_util import P
 from lk.classes.source_code_repo import SourceCodeRepo
 from lk.config import app_config
 from lk.utils.config_util import ConfigUtil
+from lk.utils.path_util import join_paths
 from lk.utils.shell_util import run_and_confirm, run_and_return_output, run_and_print
 from lk.utils.string_util import multi_command_template, cli_print
 
@@ -48,8 +49,8 @@ class PushCommand(object):
             self.command_already_created = False
 
         copy_file(
-            os.path.join(ConfigUtil().user_commands_directory, self.command_file_string_path),
-            os.path.join(ConfigUtil().user_lk_dir, self.local_repo_commands_dir_string_path)
+            join_paths(ConfigUtil().user_commands_directory, self.command_file_string_path),
+            join_paths(ConfigUtil().user_lk_dir, self.local_repo_commands_dir_string_path)
         )
 
         if self.changes_exist():
