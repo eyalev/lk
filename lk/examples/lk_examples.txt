@@ -1,0 +1,3 @@
+lk create-shell-command my-command
+lk default-repo
+lk hello-world

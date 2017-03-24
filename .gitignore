@@ -4,3 +4,9 @@
 .idea/
 
 repos/
+
+lk.egg-info/
+
+lk/env/
+
+.cache/

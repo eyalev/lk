@@ -1,0 +1,9 @@
+core_commands:
+
+  hello-world:
+    file_name: "hello_world_command.py"
+    decription: "Prints Hello World"
+
+  hello-me:
+    file_name: "hello_me_command.py"
+    decription: "Prints Hello me"
