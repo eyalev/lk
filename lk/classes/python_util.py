@@ -1,3 +1,4 @@
+from lk.classes.utils.input_util import Input
 from lk.config import app_config
 from lk.utils.string_util import String
 
@@ -58,6 +59,11 @@ class PythonUtil(object):
     @property
     def is_bash_error_code(self):
         return not self.is_bash_success_code
+
+    @property
+    def is_list(self):
+        is_list = Input(self.input).is_list()
+        return is_list
 
 
 P = PythonUtil

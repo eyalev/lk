@@ -2,6 +2,8 @@ import json
 
 from utils2.json_util import JSONUtil
 
+from lk.classes.utils.input_util import Input
+
 
 class String(object):
 
@@ -164,7 +166,13 @@ print_dict = {
 }
 
 
-def print_util(string, name=None):
+def print_util(param, name=None):
+
+    if Input(param).is_list:
+        string = '\n'.join(param)
+
+    else:
+        string = param
 
     prefix = ''
     suffix = '\n'

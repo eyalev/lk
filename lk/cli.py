@@ -385,11 +385,37 @@ class MyCLI(MultiCommand):
 
 
 # env_option = click.Option(param_decls=['-e', '--env'], default='prod', help='Environment config')
-# params = [env_option]
+
+# version_option = click.Option(param_decls=['--version'], is_flag=True, default=False)
+# params = [version_option]
 
 # cli = MyCLI(params=params)
 # @click.option('--debug/--no-debug', default=False)
-cli = MyCLI()
+# @click.option('--version', is_flag=True, default=False)
+
+# version = click.version_option
+
+# cli = MyCLI()
+# cli = MyCLI(params=params)
+
+
+lk_version = '0.01'
+
+temp = click.help_option
+
+
+def print_version(ctx, param, value):
+    if not value or ctx.resilient_parsing:
+        return
+    click.echo(lk_version)
+    ctx.exit()
+
+
+@click.command(cls=MyCLI)
+@click.option('--version', is_flag=True, callback=print_version, expose_value=False, is_eager=True)
+def cli():
+
+    pass
 
 
 if __name__ == '__main__':
